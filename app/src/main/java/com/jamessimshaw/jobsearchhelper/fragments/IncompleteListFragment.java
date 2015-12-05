@@ -9,12 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.jamessimshaw.jobsearchhelper.R;
 import com.jamessimshaw.jobsearchhelper.adapters.PostingRecViewAdapter;
+import com.jamessimshaw.jobsearchhelper.helpers.SimpleItemTouchHelper;
 import com.jamessimshaw.jobsearchhelper.models.Posting;
 
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class IncompleteListFragment extends Fragment {
             }
         });
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Conventions");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Pending");
 
         RecyclerView postingListRecView = (RecyclerView) view.findViewById(R.id.list_fragment_recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -69,6 +71,9 @@ public class IncompleteListFragment extends Fragment {
         postingListRecView.setLayoutManager(layoutManager);
         postingListRecView.setItemAnimator(new DefaultItemAnimator());
         postingListRecView.setAdapter(adapter);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleItemTouchHelper(adapter));
+        itemTouchHelper.attachToRecyclerView(postingListRecView);
 
         return view;
     }

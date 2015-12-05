@@ -7,14 +7,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jamessimshaw.jobsearchhelper.R;
+import com.jamessimshaw.jobsearchhelper.interfaces.RecyclerViewMovementInterface;
 import com.jamessimshaw.jobsearchhelper.models.Posting;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by james on 12/4/15.
  */
-public class PostingRecViewAdapter extends RecyclerView.Adapter<PostingRecViewAdapter.ViewHolder> {
+public class PostingRecViewAdapter extends RecyclerView.Adapter<PostingRecViewAdapter.ViewHolder>
+        implements RecyclerViewMovementInterface{
 
     ArrayList<Posting> mPostings;
 
@@ -41,6 +44,34 @@ public class PostingRecViewAdapter extends RecyclerView.Adapter<PostingRecViewAd
     @Override
     public int getItemCount() {
         return mPostings.size();
+    }
+
+    @Override
+    public boolean move(int start, int finish) {
+        if (start < finish) {
+            for (int i = start; i < finish; i++) {
+                Collections.swap(mPostings, i, i + 1);
+            }
+        } else {
+            for (int i = start; i > finish; i--) {
+                Collections.swap(mPostings, i, i - 1);
+            }
+        }
+        notifyItemMoved(start, finish);
+        return true;
+    }
+
+    @Override
+    public void swipeLeft(int position) {
+        mPostings.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    @Override
+    public void swipeRight(int position) {
+        //TODO: Add in completion features
+        mPostings.remove(position);
+        notifyItemRemoved(position);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
