@@ -1,13 +1,23 @@
 package com.jamessimshaw.jobsearchhelper.fragments;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.jamessimshaw.jobsearchhelper.R;
+import com.jamessimshaw.jobsearchhelper.adapters.PostingRecViewAdapter;
+import com.jamessimshaw.jobsearchhelper.models.Posting;
+
+import java.util.ArrayList;
 
 /**
  * Created by james on 12/3/15.
@@ -15,6 +25,7 @@ import com.jamessimshaw.jobsearchhelper.R;
 public class IncompleteListFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
+    private ArrayList<Posting> mPostings;
 
     public static IncompleteListFragment newInstance() {
         IncompleteListFragment fragment = new IncompleteListFragment();
@@ -27,7 +38,37 @@ public class IncompleteListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //TODO: Remove this when we have a real list
+        mPostings = new ArrayList<>();
+        mPostings.add(new Posting("Some Company", "Software Engineer", Uri.parse("www.google.com")));
+        mPostings.add(new Posting("Some Company2", "Software Engineer", Uri.parse("www.microsoft.com")));
+        mPostings.add(new Posting("Some Company3", "Software Engineer", Uri.parse("www.yahoo.com")));
+        mPostings.add(new Posting("Some Company4", "Software Engineer", Uri.parse("www.wikipedia.com")));
+        mPostings.add(new Posting("Some Company2", "Software Engineer", Uri.parse("www.twitter.com")));
+        mPostings.add(new Posting("Some Company3", "Software Engineer", Uri.parse("www.linkedin.com")));
+        mPostings.add(new Posting("Some Company7", "Software Engineer", Uri.parse("www.indeed.com")));
+        mPostings.add(new Posting("Some Company5", "Software Engineer", Uri.parse("www.google.com")));
+        mPostings.add(new Posting("Some Company3", "Software Engineer", Uri.parse("www.linkedin.com")));
+        //TODO: End of dummy list
         View view = inflater.inflate(R.layout.fragment_lists_with_fab, container, false);
+
+        FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null)
+                    mListener.onFragmentInteraction();
+            }
+        });
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Conventions");
+
+        RecyclerView postingListRecView = (RecyclerView) view.findViewById(R.id.list_fragment_recyclerview);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        PostingRecViewAdapter adapter = new PostingRecViewAdapter(mPostings);
+        postingListRecView.setLayoutManager(layoutManager);
+        postingListRecView.setItemAnimator(new DefaultItemAnimator());
+        postingListRecView.setAdapter(adapter);
 
         return view;
     }
