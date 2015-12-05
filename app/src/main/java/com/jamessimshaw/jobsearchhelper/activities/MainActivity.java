@@ -16,10 +16,13 @@ import android.view.MenuItem;
 
 import com.jamessimshaw.jobsearchhelper.R;
 import com.jamessimshaw.jobsearchhelper.fragments.IncompleteListFragment;
+import com.jamessimshaw.jobsearchhelper.fragments.NewPositionFragment;
+import com.jamessimshaw.jobsearchhelper.models.Posting;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        IncompleteListFragment.OnFragmentInteractionListener{
+        IncompleteListFragment.OnFragmentInteractionListener,
+        NewPositionFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,8 +109,25 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void gotoFragment(Fragment fragment) {
+        //Make sure the container for the fragments is present
+        if (findViewById(R.id.fragment_container_main) != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container_main, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+
     @Override
     public void onFragmentInteraction() {
+        Fragment fragment = NewPositionFragment.newInstance();
+
+        gotoFragment(fragment);
+    }
+
+    @Override
+    public void onFragmentInteraction(Posting posting) {
 
     }
 }
