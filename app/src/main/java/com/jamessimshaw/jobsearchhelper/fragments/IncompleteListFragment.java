@@ -28,6 +28,7 @@ public class IncompleteListFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private ArrayList<Posting> mPostings;
+    PostingRecViewAdapter mAdapter;
 
     public static IncompleteListFragment newInstance() {
         IncompleteListFragment fragment = new IncompleteListFragment();
@@ -36,10 +37,6 @@ public class IncompleteListFragment extends Fragment {
 
     public IncompleteListFragment() {
         // Required constructor
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //TODO: Remove this when we have a real list
         mPostings = new ArrayList<>();
         mPostings.add(new Posting("Some Company", "Software Engineer", Uri.parse("www.google.com")));
@@ -52,6 +49,10 @@ public class IncompleteListFragment extends Fragment {
         mPostings.add(new Posting("Some Company5", "Software Engineer", Uri.parse("www.google.com")));
         mPostings.add(new Posting("Some Company3", "Software Engineer", Uri.parse("www.linkedin.com")));
         //TODO: End of dummy list
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_lists_with_fab, container, false);
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -67,12 +68,12 @@ public class IncompleteListFragment extends Fragment {
 
         RecyclerView postingListRecView = (RecyclerView) view.findViewById(R.id.list_fragment_recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        PostingRecViewAdapter adapter = new PostingRecViewAdapter(mPostings);
+        mAdapter = new PostingRecViewAdapter(mPostings);
         postingListRecView.setLayoutManager(layoutManager);
         postingListRecView.setItemAnimator(new DefaultItemAnimator());
-        postingListRecView.setAdapter(adapter);
+        postingListRecView.setAdapter(mAdapter);
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleItemTouchHelper(adapter));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleItemTouchHelper(mAdapter));
         itemTouchHelper.attachToRecyclerView(postingListRecView);
 
         return view;
@@ -93,6 +94,11 @@ public class IncompleteListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void add(Posting posting) {
+        mPostings.add(posting);
+        mAdapter.notifyItemInserted(mPostings.size() - 1);
     }
 
     /**

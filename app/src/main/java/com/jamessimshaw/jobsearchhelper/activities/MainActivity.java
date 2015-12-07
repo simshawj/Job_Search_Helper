@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity
         IncompleteListFragment.OnFragmentInteractionListener,
         NewPositionFragment.OnFragmentInteractionListener {
 
+    private static final String LIST_TAG = "list";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity
         //Make sure the container for the fragments is present
         if (findViewById(R.id.fragment_container_main) != null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container_main, fragment)
+                    .replace(R.id.fragment_container_main, fragment, LIST_TAG)
                     .commit();
         }
     }
@@ -106,6 +108,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(Posting posting) {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(LIST_TAG);
+        if (fragment instanceof IncompleteListFragment) {
+            IncompleteListFragment listFragment = (IncompleteListFragment) fragment;
+            listFragment.add(posting);
+        }
+
+        getSupportFragmentManager().popBackStack();
 
     }
 }
