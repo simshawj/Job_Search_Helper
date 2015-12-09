@@ -20,9 +20,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             TABLE_POSTINGS + " (" + BaseColumns._ID +
             " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_COMPANY +
             " TEXT NOT NULL, " + COLUMN_POSITION +
-            " TEXT, " + COLUMN_URL +
-            " TEXT, " + COLUMN_ADDED +
-            " INTEGER, " + COLUMN_COMPLETE +
+            " TEXT NOT NULL, " + COLUMN_URL +
+            " TEXT NOT NULL, " + COLUMN_ADDED +
+            " INTEGER NOT NULL, " + COLUMN_COMPLETE +
             " INTEGER)";
 
     public SQLiteHelper(Context context) {
