@@ -1,5 +1,7 @@
 package com.jamessimshaw.jobsearchhelper.adapters;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,11 +9,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jamessimshaw.jobsearchhelper.R;
+import com.jamessimshaw.jobsearchhelper.datasources.SQLiteDataSource;
+import com.jamessimshaw.jobsearchhelper.datasources.SQLiteHelper;
 import com.jamessimshaw.jobsearchhelper.interfaces.RecyclerViewMovementInterface;
 import com.jamessimshaw.jobsearchhelper.models.Posting;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 /**
  * Created by james on 12/4/15.
@@ -19,10 +24,12 @@ import java.util.Collections;
 public class PostingRecViewAdapter extends RecyclerView.Adapter<PostingRecViewAdapter.ViewHolder>
         implements RecyclerViewMovementInterface{
 
-    ArrayList<Posting> mPostings;
+    Cursor mCursor;
+    SQLiteDataSource mDataSource;
 
-    public PostingRecViewAdapter(ArrayList<Posting> postings) {
-        mPostings = postings;
+    public PostingRecViewAdapter(Cursor cursor, Context context) {
+        mDataSource = new SQLiteDataSource(context);
+        mCursor = cursor;
     }
 
     @Override
@@ -34,27 +41,28 @@ public class PostingRecViewAdapter extends RecyclerView.Adapter<PostingRecViewAd
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String dateString = "Added: " + mPostings.get(position).getAdded().toString();
+        mCursor.moveToPosition(position);
+        String dateString = "Added: " + new Date(getLongFromColumnName(mCursor, SQLiteHelper.COLUMN_ADDED)).toString();
         holder.positionDateAddedTextView.setText(dateString);
-        holder.positionCompanyTextView.setText(mPostings.get(position).getCompany());
-        holder.positionTitleTextView.setText(mPostings.get(position).getTitle());
-        holder.positionUrlTextView.setText(mPostings.get(position).getUrl().toString());
+        holder.positionCompanyTextView.setText(getStringFromColumnName(mCursor, SQLiteHelper.COLUMN_COMPANY));
+        holder.positionTitleTextView.setText(getStringFromColumnName(mCursor, SQLiteHelper.COLUMN_POSITION));
+        holder.positionUrlTextView.setText(getStringFromColumnName(mCursor, SQLiteHelper.COLUMN_URL));
     }
 
     @Override
     public int getItemCount() {
-        return mPostings.size();
+        return mCursor.getCount();
     }
 
     @Override
     public boolean move(int start, int finish) {
         if (start < finish) {
             for (int i = start; i < finish; i++) {
-                Collections.swap(mPostings, i, i + 1);
+                //Collections.swap(mPostings, i, i + 1);
             }
         } else {
             for (int i = start; i > finish; i--) {
-                Collections.swap(mPostings, i, i - 1);
+                //Collections.swap(mPostings, i, i - 1);
             }
         }
         notifyItemMoved(start, finish);
@@ -63,15 +71,25 @@ public class PostingRecViewAdapter extends RecyclerView.Adapter<PostingRecViewAd
 
     @Override
     public void swipeLeft(int position) {
-        mPostings.remove(position);
+        mDataSource.delete(position);
+        mCursor = mDataSource.read();
         notifyItemRemoved(position);
     }
 
     @Override
     public void swipeRight(int position) {
         //TODO: Add in completion features
-        mPostings.remove(position);
+        mDataSource.delete(position);
+        mCursor = mDataSource.read();
         notifyItemRemoved(position);
+    }
+
+    private long getLongFromColumnName(Cursor cursor, String columnName) {
+        return cursor.getLong(cursor.getColumnIndex(columnName));
+    }
+
+    private String getStringFromColumnName(Cursor cursor, String columnName) {
+        return cursor.getString(cursor.getColumnIndex(columnName));
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

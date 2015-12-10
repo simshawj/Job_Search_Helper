@@ -1,6 +1,7 @@
 package com.jamessimshaw.jobsearchhelper.fragments;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.jamessimshaw.jobsearchhelper.R;
 import com.jamessimshaw.jobsearchhelper.adapters.PostingRecViewAdapter;
+import com.jamessimshaw.jobsearchhelper.datasources.SQLiteDataSource;
 import com.jamessimshaw.jobsearchhelper.helpers.SimpleItemTouchHelper;
 import com.jamessimshaw.jobsearchhelper.models.Posting;
 
@@ -27,7 +29,7 @@ import java.util.ArrayList;
 public class IncompleteListFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-    private ArrayList<Posting> mPostings;
+    private SQLiteDataSource mDataSource;
     PostingRecViewAdapter mAdapter;
 
     public static IncompleteListFragment newInstance() {
@@ -37,18 +39,6 @@ public class IncompleteListFragment extends Fragment {
 
     public IncompleteListFragment() {
         // Required constructor
-        //TODO: Remove this when we have a real list
-        mPostings = new ArrayList<>();
-        mPostings.add(new Posting("Some Company", "Software Engineer", Uri.parse("www.google.com")));
-        mPostings.add(new Posting("Some Company2", "Software Engineer", Uri.parse("www.microsoft.com")));
-        mPostings.add(new Posting("Some Company3", "Software Engineer", Uri.parse("www.yahoo.com")));
-        mPostings.add(new Posting("Some Company4", "Software Engineer", Uri.parse("www.wikipedia.com")));
-        mPostings.add(new Posting("Some Company2", "Software Engineer", Uri.parse("www.twitter.com")));
-        mPostings.add(new Posting("Some Company3", "Software Engineer", Uri.parse("www.linkedin.com")));
-        mPostings.add(new Posting("Some Company7", "Software Engineer", Uri.parse("www.indeed.com")));
-        mPostings.add(new Posting("Some Company5", "Software Engineer", Uri.parse("www.google.com")));
-        mPostings.add(new Posting("Some Company3", "Software Engineer", Uri.parse("www.linkedin.com")));
-        //TODO: End of dummy list
     }
 
     @Override
@@ -68,7 +58,9 @@ public class IncompleteListFragment extends Fragment {
 
         RecyclerView postingListRecView = (RecyclerView) view.findViewById(R.id.list_fragment_recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mAdapter = new PostingRecViewAdapter(mPostings);
+        mDataSource = new SQLiteDataSource(getContext());
+        Cursor cursor = mDataSource.read();
+        mAdapter = new PostingRecViewAdapter(cursor, getContext());
         postingListRecView.setLayoutManager(layoutManager);
         postingListRecView.setItemAnimator(new DefaultItemAnimator());
         postingListRecView.setAdapter(mAdapter);
@@ -97,8 +89,8 @@ public class IncompleteListFragment extends Fragment {
     }
 
     public void add(Posting posting) {
-        mPostings.add(posting);
-        mAdapter.notifyItemInserted(mPostings.size() - 1);
+        int position = mDataSource.create(posting);
+        mAdapter.notifyItemInserted(position);
     }
 
     /**

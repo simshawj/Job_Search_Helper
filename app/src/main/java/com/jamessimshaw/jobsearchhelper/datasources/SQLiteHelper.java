@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "job_search_helper.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     public static final String TABLE_POSTINGS = "postings";
     public static final String COLUMN_COMPANY = "company";
@@ -15,6 +15,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_URL = "url";
     public static final String COLUMN_ADDED = "added";
     public static final String COLUMN_COMPLETE = "completed";
+    public static final String COLUMN_PRIORITY = "priority";
 
     private static final String POSTING_CREATE = "create table " +
             TABLE_POSTINGS + " (" + BaseColumns._ID +
@@ -22,6 +23,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             " TEXT NOT NULL, " + COLUMN_POSITION +
             " TEXT NOT NULL, " + COLUMN_URL +
             " TEXT NOT NULL, " + COLUMN_ADDED +
+            " INTEGER NOT NULL, " + COLUMN_PRIORITY +
             " INTEGER NOT NULL, " + COLUMN_COMPLETE +
             " INTEGER)";
 
@@ -36,6 +38,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        //currently its ok to drop the tables and start from scratch until we release version 1
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_POSTINGS);
         onCreate(db);
     }
 }
