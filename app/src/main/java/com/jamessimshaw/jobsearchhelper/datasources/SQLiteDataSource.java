@@ -29,12 +29,15 @@ public class SQLiteDataSource {
     public int create(Posting posting) {
         SQLiteDatabase database = open();
 
-        Cursor cursor = database.rawQuery("SELECT MAX(" + SQLiteHelper.COLUMN_PRIORITY + ") FROM " +
+        Cursor cursor = database.rawQuery("SELECT MAX(" + SQLiteHelper.COLUMN_PRIORITY + ") AS " +
+                                            SQLiteHelper.COLUMN_PRIORITY + " FROM " +
                                             SQLiteHelper.TABLE_POSTINGS, null);
         int priority = 0;
         if (cursor != null) {
+            int index = cursor.getColumnIndex(SQLiteHelper.COLUMN_PRIORITY);
             cursor.moveToFirst();
-            priority = cursor.getInt(0) + 1;
+            if (!cursor.isNull(index))
+                priority = (int) cursor.getLong(index) + 1;
         }
 
         database.beginTransaction();
@@ -74,7 +77,7 @@ public class SQLiteDataSource {
         String[] whereArgs = {Integer.toString(position)};
         String query = "UPDATE " + SQLiteHelper.TABLE_POSTINGS + " SET " + SQLiteHelper.COLUMN_PRIORITY +
                 " = " + SQLiteHelper.COLUMN_PRIORITY + "-1 WHERE " + SQLiteHelper.COLUMN_PRIORITY +
-                " >= ?";
+                " > ?";
 
         database.delete(SQLiteHelper.TABLE_POSTINGS, SQLiteHelper.COLUMN_PRIORITY + " = ?", whereArgs);
         database.rawQuery(query, whereArgs);
