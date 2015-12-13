@@ -80,7 +80,7 @@ public class SQLiteDataSource {
                 " > ?";
 
         database.delete(SQLiteHelper.TABLE_POSTINGS, SQLiteHelper.COLUMN_PRIORITY + " = ?", whereArgs);
-        database.rawQuery(query, whereArgs);
+        database.execSQL(query, whereArgs);
 
         close(database);
     }
