@@ -56,15 +56,17 @@ public class PostingRecViewAdapter extends RecyclerView.Adapter<PostingRecViewAd
 
     @Override
     public boolean move(int start, int finish) {
+        //TODO: Possibly optimize this section
         if (start < finish) {
             for (int i = start; i < finish; i++) {
-                //Collections.swap(mPostings, i, i + 1);
+                mDataSource.swap(i, i + 1);
             }
         } else {
             for (int i = start; i > finish; i--) {
-                //Collections.swap(mPostings, i, i - 1);
+                mDataSource.swap(i, i - 1);
             }
         }
+        mCursor = mDataSource.read();
         notifyItemMoved(start, finish);
         return true;
     }

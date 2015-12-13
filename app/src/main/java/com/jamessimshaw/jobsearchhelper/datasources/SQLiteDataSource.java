@@ -84,4 +84,20 @@ public class SQLiteDataSource {
 
         close(database);
     }
+
+    public void swap(int first, int second) {
+        SQLiteDatabase database = open();
+        String query = "UPDATE " + SQLiteHelper.TABLE_POSTINGS + " SET " + SQLiteHelper.COLUMN_PRIORITY +
+                " = ? WHERE " + SQLiteHelper.COLUMN_PRIORITY + " = ?";
+
+        String start = Integer.toString(first);
+        String temp = Integer.toString(-1);
+        String finish = Integer.toString(second);
+
+        database.execSQL(query, new String[]{temp, start});
+        database.execSQL(query, new String[]{start, finish});
+        database.execSQL(query, new String[]{finish, temp});
+
+        close(database);
+    }
 }
